@@ -30,12 +30,16 @@ app.post('/auth', function(request, response) {
 	var password = request.body.password;
 	if (username && password) {
 		//request the authentication from server
-    Request.get(serveradress+'admin/'+username+'/'+password, (error, resp, body) => {
+    var requestString = serveradress+'admin/'+username+'/'+password;
+    console.log(requestString);
+    Request.get(requestString, (error, resp, body) => {
       if (error) {
         response.send('Could not connect to server');
       }
       var obj = JSON.parse(body);
-      if (obj.autenticaadmin='true') {
+      if (obj.autenticaadmin=='true') {
+        console.log(obj);
+        console.log(obj.autenticaadmin);
         request.session.loggedin = true;
         request.session.username = username;
         response.redirect('/home');

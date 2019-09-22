@@ -1,0 +1,22 @@
+{
+  "name": "backoffice",
+  "version": "1.0.0",
+  "description": "backoffice web",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "engines": {
+    "node": "10.16.3",
+    "npm": "6.9.0"
+  },
+  "keywords": [
+    "backoffice;",
+    "web"
+  ],
+  "author": "Alfredo Campos",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

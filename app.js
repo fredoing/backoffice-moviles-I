@@ -43,7 +43,9 @@ app.post('/auth', function(request, response) {
         request.session.loggedin = true;
         request.session.username = username;
         response.redirect('/home');
-      }
+      } else {
+				response.send('Incorrect Username and/or Password!');
+			}
     });
 	} else {
 		response.send('Please enter Username and Password!');

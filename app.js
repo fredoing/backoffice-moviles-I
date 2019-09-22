@@ -21,6 +21,10 @@ app.get('/', function(request, response) {
 	response.sendFile(path.join(__dirname + '/views/login.html'));
 });
 
+app.get('/home' , (request, response) => {
+  response.sendFile(path.join(__dirname + '/views/index.html'));
+})
+
 app.post('/auth', function(request, response) {
 	var username = request.body.username;
 	var password = request.body.password;
@@ -30,7 +34,12 @@ app.post('/auth', function(request, response) {
       if (error) {
         response.send('Could not connect to server');
       }
-      console.log(JSON.parse(body));
+      var obj = JSON.parse(body);
+      if (obj.autenticaadmin='true') {
+        request.session.loggedin = true;
+        request.session.username = username;
+        response.redirect('/home');
+      }
     });
 	} else {
 		response.send('Please enter Username and Password!');

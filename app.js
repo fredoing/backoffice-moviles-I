@@ -16,6 +16,9 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
+app.use(fileUpload());
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
 
 app.get('/', function(request, response) {
 	response.sendFile(path.join(__dirname + '/views/login.html'));

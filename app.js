@@ -16,7 +16,6 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
-app.use(fileUpload());
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
@@ -25,8 +24,19 @@ app.get('/', function(request, response) {
 });
 
 app.get('/home' , (request, response) => {
-  response.sendFile(path.join(__dirname + '/views/index.html'));
+  response.render('index');
 })
+
+app.get('/users', (request, response) => {
+	var requestString = serveradress+'admin/usuarios';
+	Request.get(requestString,(error, resp, body) => {
+		if (error) {
+			response.send('Could not connect to server');
+		}
+		var obj = JSON.parse(body);
+		response.render('usuarios',{data:obj});
+	});
+});
 
 app.post('/auth', function(request, response) {
 	var username = request.body.username;
@@ -54,6 +64,7 @@ app.post('/auth', function(request, response) {
 		response.end();
 	}
 });
+
 
 var server = app.listen(PORT, function () {
     console.log("app running on port.", server.address().port);

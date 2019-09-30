@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
 <body style="background-color:#E9ECEF;">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom:2%">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/home">Home</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -31,23 +31,30 @@
       </ul>
     </div>
   </nav>
+<div class="container">
+  <h2>Nombre: <%=rest.nombre%></h2>
+  <h3>Latitud: <%=rest.latitud%>  Longitud: <%=rest.longitud%></h3>
+  <h3>Estrellas: <%=rest.calificacion%></h3>
+  <h3>Contacto:</h3>
+  <p><%=rest.contacto%></p>
+  <h3>Horario:</h3>
+  <p><%=rest.horario%></p>
+  <h3>Precio:</h3>
+  <p><%=rest.precio%></p>
+</div>
 <div>
-  <table class="table" style="width:80%;margin-left:auto;margin-right:auto">
+  <table class="table" style="width:50%;margin-left:auto;margin-right:auto">
   <thead class="thead-dark">
     <tr>
-      <th scope="col">Id</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Correo</th>
-      <th scope="col">Tipo</th>
+      <th scope="col">Comentario</th>
+      <th scope="col">Usuario</th>
     </tr>
   </thead>
   <tbody>
-    <% data.forEach(function(item, index){ %>
+    <% comments.forEach(function(item, index){ %>
     <tr>
-      <td><%=item.idusuario%></td>
-      <td><%=item.nombreuser%></td>
-      <td><%=item.correouser%></td>
-      <td><%=item.tipouser%></td>
+      <td><%=item.comentario%></td>
+      <td><%=item.nombre%></td>
     </tr>
     <% }); %>
   </tbody>

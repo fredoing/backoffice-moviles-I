@@ -38,6 +38,39 @@ app.get('/users', (request, response) => {
 	});
 });
 
+app.get('/rests', (request, response) => {
+	var requestString = serveradress+'rests/2000/9.856030/-83.912634';
+	Request.get(requestString,(error, resp, body) => {
+		if (error) {
+			response.send('Could not connect to server');
+		}
+		var obj = JSON.parse(body);
+		response.render('rests',{data:obj});
+	});
+});
+
+app.get('/rest/:id', (request, response) => {
+	var id = request.params.id;
+	var restString = serveradress+'rest/'+id;
+	var restaurante = {};
+	Request.get(restString,(error, resp, body) => {
+		if (error) {
+			response.send('Could not connect to server');
+		}
+		restaurante = JSON.parse(body);
+	});
+	commentString = serveradress+'comments/'+id;
+	Request.get(commentString,(error, resp, body) => {
+		if (error) {
+			response.send('Could not connect to server');
+		}
+		if (restaurante!=undefined){
+			var comentarios = JSON.parse(body);
+			response.render('restdetails', {rest:restaurante[0], comments:comentarios});
+		}
+	});
+});
+
 app.post('/auth', function(request, response) {
 	var username = request.body.username;
 	var password = request.body.password;

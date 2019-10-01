@@ -21,8 +21,6 @@
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item" href="/rests">Ver restaurantes</a>
             <a class="dropdown-item" href="/crearest">Crear restaurante</a>
-            <a class="dropdown-item" href="/eliminarest">Eliminar restaurante</a>
-            <a class="dropdown-item" href="/modificarest">Modificar restaurante</a>
           </div>
         </li>
         <li class="nav-item">
@@ -39,6 +37,8 @@
         <th scope="col">Latitud</th>
         <th scope="col">Longitud</th>
         <th scope="col">Estrellas</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -48,6 +48,8 @@
         <td><%=item.latitud%></td>
         <td><%=item.longitud%></td>
         <td><%=item.calificacion%></td>
+        <td><a href="/borrar/<%=item.id%>" style="color:rgb(199,20,20)">eliminar</a></td>
+        <td><a href="/modify/<%=item.id%>">editar</a></td>
       </tr>
       <% }); %>
     </tbody>

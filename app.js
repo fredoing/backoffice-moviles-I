@@ -9,6 +9,12 @@ var app = express();
 const PORT = process.env.PORT || 5000
 var serveradress = 'https://moviles1-db.herokuapp.com/';
 
+const preciostable = {
+    'barato': 1,
+    'medio': 2,
+    'caro': 3
+};
+
 app.use(session({
 	secret: 'secret',
 	resave: true,
@@ -25,6 +31,10 @@ app.get('/', function(request, response) {
 
 app.get('/home' , (request, response) => {
   response.render('index');
+})
+
+app.get('/crearest' , (request, response) => {
+  response.render('addrest');
 })
 
 app.get('/users', (request, response) => {
@@ -45,6 +55,11 @@ app.get('/rests', (request, response) => {
 			response.send('Could not connect to server');
 		}
 		var obj = JSON.parse(body);
+		obj.forEach((item, next) => {
+			var cal = item.calificacion;
+			cal = parseFloat(cal).toFixed(1);
+			item.calificacion = cal;
+		});
 		response.render('rests',{data:obj});
 	});
 });
@@ -58,6 +73,9 @@ app.get('/rest/:id', (request, response) => {
 			response.send('Could not connect to server');
 		}
 		restaurante = JSON.parse(body);
+		var cal = restaurante[0].calificacion;
+		cal = parseFloat(cal).toFixed(1);
+		restaurante[0].calificacion = cal;
 	});
 	commentString = serveradress+'comments/'+id;
 	Request.get(commentString,(error, resp, body) => {
@@ -67,6 +85,34 @@ app.get('/rest/:id', (request, response) => {
 		if (restaurante!=undefined){
 			var comentarios = JSON.parse(body);
 			response.render('restdetails', {rest:restaurante[0], comments:comentarios});
+		}
+	});
+});
+
+app.get('/modify/:id', (request, response) => {
+	var id = request.params.id;
+	var restString = serveradress+'rest/'+id;
+	Request.get(restString,(error, resp, body) => {
+		if (error) {
+			response.send('Could not connect to server');
+		}
+		var restaurante = JSON.parse(body);
+		response.render('modifyrest', {rest:restaurante[0]});
+	});
+});
+
+app.get('/borrar/:rest' , (request, response) => {
+	var idrest = request.params.rest;
+	var requestString = serveradress+'deleterest/'+idrest;
+	Request.get(requestString,(error, resp, body) => {
+		if (error) {
+			response.send('Could not connect to server');
+		}
+		var obj = JSON.parse(body);
+		if (obj.borrado == true) {
+			response.redirect('/rests');
+		} else {
+			response.send('Could not delete restaurant try again');
 		}
 	});
 });
@@ -98,6 +144,47 @@ app.post('/auth', function(request, response) {
 	}
 });
 
+app.post('/addrest', (request, response) => {
+	var nombre = request.body.nombrerest;
+	var latitud = request.body.latitud;
+	var longitud = request.body.longitud;
+	var contacto = request.body.contacto;
+	var horario = request.body.horario;
+	var precio = preciostable[request.body.precio];
+	var requestString = serveradress+'newrest/'+nombre+'/'+latitud+'/'+longitud+'/'+contacto+'/'+horario+'/'+precio;
+	Request.get(requestString,(error, resp, body) => {
+		if (error) {
+			response.send('Could not connect to server');
+		}
+		var obj = JSON.parse(body);
+		if (obj != null) {
+			response.redirect('/rests');
+		}
+	});
+});
+
+app.post('/modifyrest/:id', (request, response) => {
+	var idrest = request.params.id;
+	var nombre = request.body.nombrerest;
+	var latitud = request.body.latitud;
+	var longitud = request.body.longitud;
+	var contacto = request.body.contacto;
+	var horario = request.body.horario;
+	var precio = preciostable[request.body.precio];
+	var requestString = serveradress+'modifyrest/'+idrest+'/'+nombre+'/'+latitud+'/'+longitud+'/'+contacto+'/'+horario+'/'+precio;
+	console.log(requestString);
+	Request.get(requestString,(error, resp, body) => {
+		if (error) {
+			response.send('Could not connect to server');
+		}
+		console.log(body);
+		var obj = JSON.parse(body);
+		if (obj != null) {
+			var url = '/rest/'+idrest;
+			response.redirect(url);
+		}
+	});
+});
 
 var server = app.listen(PORT, function () {
     console.log("app running on port.", server.address().port);

@@ -15,6 +15,15 @@ const preciostable = {
     'caro': 3
 };
 
+const tipostable = {
+    'mexicana': 1,
+    'casera': 2,
+    'italiana': 3,
+    'rapida':4,
+    'gourmet':5,
+    'caribena':6
+};
+
 app.use(session({
 	secret: 'secret',
 	resave: true,
@@ -31,11 +40,15 @@ app.get('/', function(request, response) {
 
 app.get('/home' , (request, response) => {
   response.render('index');
-})
+});
 
 app.get('/crearest' , (request, response) => {
   response.render('addrest');
-})
+});
+
+app.get('/recover/:mail' , (request, response) => {
+  response.sendFile(path.join(__dirname + '/views/recover.html'));
+});
 
 app.get('/users', (request, response) => {
 	var requestString = serveradress+'admin/usuarios';
@@ -151,7 +164,8 @@ app.post('/addrest', (request, response) => {
 	var contacto = request.body.contacto;
 	var horario = request.body.horario;
 	var precio = preciostable[request.body.precio];
-	var requestString = serveradress+'newrest/'+nombre+'/'+latitud+'/'+longitud+'/'+contacto+'/'+horario+'/'+precio;
+  var tipo = tipostable[request.body.tipocomida];
+	var requestString = serveradress+'newrest/'+nombre+'/'+latitud+'/'+longitud+'/'+contacto+'/'+horario+'/'+precio+'/'+tipo;
 	Request.get(requestString,(error, resp, body) => {
 		if (error) {
 			response.send('Could not connect to server');
@@ -171,7 +185,8 @@ app.post('/modifyrest/:id', (request, response) => {
 	var contacto = request.body.contacto;
 	var horario = request.body.horario;
 	var precio = preciostable[request.body.precio];
-	var requestString = serveradress+'modifyrest/'+idrest+'/'+nombre+'/'+latitud+'/'+longitud+'/'+contacto+'/'+horario+'/'+precio;
+  var tipo = tipostable[request.body.tipocomida];
+	var requestString = serveradress+'modifyrest/'+idrest+'/'+nombre+'/'+latitud+'/'+longitud+'/'+contacto+'/'+horario+'/'+precio+'/'+tipo;
 	console.log(requestString);
 	Request.get(requestString,(error, resp, body) => {
 		if (error) {
@@ -183,6 +198,21 @@ app.post('/modifyrest/:id', (request, response) => {
 			var url = '/rest/'+idrest;
 			response.redirect(url);
 		}
+	});
+});
+
+app.post('/recover', (request, response) => {
+  var mail = request.body.username;
+  var password = request.body.password;
+  var tipo = tipostable[request.body.tipocomida];
+	var requestString = serveradress+'cambia/'+password+'/'+mail;
+	console.log(requestString);
+	Request.get(requestString,(error, resp, body) => {
+		if (error) {
+			response.send('Could not connect to server');
+		} else {
+      response.send('se cambio la contraseña');
+    }
 	});
 });
 

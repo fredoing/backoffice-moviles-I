@@ -3,6 +3,7 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var path = require('path');
 var Request = require("request");
+const fileUpload = require('express-fileupload');
 
 var app = express();
 
@@ -158,6 +159,18 @@ app.post('/auth', function(request, response) {
 });
 
 app.post('/addrest', (request, response) => {
+  var foto = '';
+  if (request.files == null) {
+    foto = '/uploads/default.png';
+  } else {
+    let imgFile = request.files.foo;
+    foto = '/uploads/'+imgFile.name;
+    imgFile.mv(__dirname + '/public/images/'+imgFile.name, function(err) {
+      if (err) {
+        return response.status(500).send(err);
+      }
+    });
+  }
 	var nombre = request.body.nombrerest;
 	var latitud = request.body.latitud;
 	var longitud = request.body.longitud;

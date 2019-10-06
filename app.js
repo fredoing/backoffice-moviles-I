@@ -3,8 +3,7 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var path = require('path');
 var Request = require("request");
-const fileUpload = require('express-fileupload');
-
+var multer = require("multer");
 var app = express();
 
 const PORT = process.env.PORT || 5000
@@ -25,6 +24,16 @@ const tipostable = {
     'caribena':6
 };
 
+var storage =   multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, './public/images');
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.originalname);
+  }
+});
+var upload = multer({ storage : storage}).single('myfile');
+
 app.use(session({
 	secret: 'secret',
 	resave: true,
@@ -32,8 +41,6 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
-app.use(express.static('public'));
-app.use(fileUpload());
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
@@ -224,19 +231,13 @@ app.post('/recover', (request, response) => {
 });
 
 app.post('/addimg', (request, response) => {
-  var foto = '';
-  if (request.files == null) {
-    foto = '/public/default.png';
-  } else {
-    let imgFile = request.files.foo;
-    foto = '/public/'+imgFile.name;
-    imgFile.mv(__dirname + '/public/images/'+imgFile.name, function(err) {
-      if (err) {
-        return response.status(500).send(err);
-      }
+  upload(request,response,function(err) {
+        if(err) {
+            console.log(err);
+            return response.end("Error uploading file.");
+        }
+        response.end("File is uploaded successfully!");
     });
-  }
-  response.redirect('addimg')
 });
 
 var server = app.listen(PORT, function () {

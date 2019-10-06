@@ -32,6 +32,8 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
+app.use(express.static('public'));
+app.use(fileUpload());
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
@@ -49,6 +51,10 @@ app.get('/crearest' , (request, response) => {
 
 app.get('/recover/:mail' , (request, response) => {
   response.sendFile(path.join(__dirname + '/views/recover.html'));
+});
+
+app.get('/addimg' , (request, response) => {
+  response.render('addimg');
 });
 
 app.get('/users', (request, response) => {
@@ -159,18 +165,6 @@ app.post('/auth', function(request, response) {
 });
 
 app.post('/addrest', (request, response) => {
-  var foto = '';
-  if (request.files == null) {
-    foto = '/uploads/default.png';
-  } else {
-    let imgFile = request.files.foo;
-    foto = '/uploads/'+imgFile.name;
-    imgFile.mv(__dirname + '/public/images/'+imgFile.name, function(err) {
-      if (err) {
-        return response.status(500).send(err);
-      }
-    });
-  }
 	var nombre = request.body.nombrerest;
 	var latitud = request.body.latitud;
 	var longitud = request.body.longitud;
@@ -227,6 +221,22 @@ app.post('/recover', (request, response) => {
       response.send('se cambio la contraseña');
     }
 	});
+});
+
+app.post('/addimg', (request, response) => {
+  var foto = '';
+  if (request.files == null) {
+    foto = '/public/default.png';
+  } else {
+    let imgFile = request.files.foo;
+    foto = '/public/'+imgFile.name;
+    imgFile.mv(__dirname + '/public/images/'+imgFile.name, function(err) {
+      if (err) {
+        return response.status(500).send(err);
+      }
+    });
+  }
+  response.redirect('addimg')
 });
 
 var server = app.listen(PORT, function () {

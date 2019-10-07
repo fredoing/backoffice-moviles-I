@@ -244,6 +244,7 @@ app.post('/addimg/:id', (request, response) => {
         //response.end("File is uploaded successfully!");
         //console.log(request.file.filename);
         var dir = "www.proyectofredoyandy.online/images/"+request.file.filename;
+        dir = encodeURIComponent(dir);
         var requestString = serveradress+'addimg/'+id+"/"+dir;
       	Request.get(requestString,(error, resp, body) => {
       		if (error) {

@@ -39,6 +39,7 @@
         <th scope="col">Estrellas</th>
         <th scope="col"></th>
         <th scope="col"></th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -50,6 +51,7 @@
         <td><%=item.calificacion%></td>
         <td><a href="/borrar/<%=item.id%>" style="color:rgb(199,20,20)">eliminar</a></td>
         <td><a href="/modify/<%=item.id%>">editar</a></td>
+        <td><a href="addimg/<%=item.id%>">agregar foto</a></td>
       </tr>
       <% }); %>
     </tbody>

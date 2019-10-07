@@ -29,7 +29,10 @@ var storage =   multer.diskStorage({
     callback(null, './public/images');
   },
   filename: function (req, file, callback) {
-    callback(null, file.originalname);
+    var nombre = file.originalname;
+    nombre += Date.now();
+    nombre += ".png";
+    callback(null, nombre);
   }
 });
 var upload = multer({ storage : storage}).single('myfile');
@@ -41,6 +44,7 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
+app.use(express.static('public'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
@@ -60,8 +64,9 @@ app.get('/recover/:mail' , (request, response) => {
   response.sendFile(path.join(__dirname + '/views/recover.html'));
 });
 
-app.get('/addimg' , (request, response) => {
-  response.render('addimg');
+app.get('/addimg/:id' , (request, response) => {
+  var id = request.params.id;
+  response.render('addimg',{rest:id});
 });
 
 app.get('/users', (request, response) => {
@@ -220,7 +225,6 @@ app.post('/recover', (request, response) => {
   var password = request.body.password;
   var tipo = tipostable[request.body.tipocomida];
 	var requestString = serveradress+'cambia/'+password+'/'+mail;
-	console.log(requestString);
 	Request.get(requestString,(error, resp, body) => {
 		if (error) {
 			response.send('Could not connect to server');
@@ -230,13 +234,24 @@ app.post('/recover', (request, response) => {
 	});
 });
 
-app.post('/addimg', (request, response) => {
+app.post('/addimg/:id', (request, response) => {
+  var id = request.params.id;
   upload(request,response,function(err) {
         if(err) {
             console.log(err);
             return response.end("Error uploading file.");
         }
-        response.end("File is uploaded successfully!");
+        //response.end("File is uploaded successfully!");
+        //console.log(request.file.filename);
+        var dir = "www.proyectofredoyandy.online/images/"+request.file.filename;
+        var requestString = serveradress+'addimg/'+id+"/"+dir;
+      	Request.get(requestString,(error, resp, body) => {
+      		if (error) {
+      			response.send('Could not connect to server');
+      		} else {
+            response.send('se inserto la imagen');
+          }
+      	});
     });
 });
 

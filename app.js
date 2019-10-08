@@ -131,10 +131,6 @@ app.get('/rest/:id', (request, response) => {
         } else {
           pics = picstemp;
         }
-        console.log('la vida despues del desastre');
-        console.log(restaurante);
-        console.log(comentarios);
-        console.log(pics);
         response.render('restdetails', {rest:restaurante[0], comments:comentarios, fotos:pics})
       });
     });

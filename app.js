@@ -98,27 +98,51 @@ app.get('/rests', (request, response) => {
 
 app.get('/rest/:id', (request, response) => {
 	var id = request.params.id;
-	var restString = serveradress+'rest/'+id;
-	var restaurante = {};
+	var restaurante = [];
+  var comentarios = [];
+  var pics = [];
+  var restString = serveradress+'rest/'+id;
 	Request.get(restString,(error, resp, body) => {
 		if (error) {
 			response.send('Could not connect to server');
 		}
 		restaurante = JSON.parse(body);
 		var cal = restaurante[0].calificacion;
-		cal = parseFloat(cal).toFixed(1);
-		restaurante[0].calificacion = cal;
+    if (cal == null) {
+      restaurante[0].calificacion = 0;
+    } else {
+      cal = parseFloat(cal).toFixed(1);
+  		restaurante[0].calificacion = cal;
+    }
+    var commentString = serveradress+'comments/'+id;
+    Request.get(commentString,(error, resp, body) => {
+      if (error) {
+        response.send('Could not connect to server');
+      }
+      comentarios = JSON.parse(body);
+      var fotosString = serveradress+'getimgs/'+id;
+      Request.get(fotosString, (error, resp, body) => {
+        if (error) {
+          response.send('Could not connect to server');
+        }
+        var picstemp = JSON.parse(body);
+        if (picstemp.length == 0) {
+          pics = [{ruta:'https://www.proyectofredoyandy.online/images/default.png'}];
+        } else {
+          pics = picstemp;
+        }
+        console.log('la vida despues del desastre');
+        console.log(restaurante);
+        console.log(comentarios);
+        console.log(pics);
+        response.render('restdetails', {rest:restaurante[0], comments:comentarios, fotos:pics})
+      });
+    });
 	});
-	commentString = serveradress+'comments/'+id;
-	Request.get(commentString,(error, resp, body) => {
-		if (error) {
-			response.send('Could not connect to server');
-		}
-		if (restaurante!=undefined){
-			var comentarios = JSON.parse(body);
-			response.render('restdetails', {rest:restaurante[0], comments:comentarios});
-		}
-	});
+
+
+
+
 });
 
 app.get('/modify/:id', (request, response) => {
@@ -243,7 +267,7 @@ app.post('/addimg/:id', (request, response) => {
         }
         //response.end("File is uploaded successfully!");
         //console.log(request.file.filename);
-        var dir = "www.proyectofredoyandy.online/images/"+request.file.filename;
+        var dir = "https://www.proyectofredoyandy.online/images/"+request.file.filename;
         dir = encodeURIComponent(dir);
         var requestString = serveradress+'addimg/'+id+"/"+dir;
       	Request.get(requestString,(error, resp, body) => {
